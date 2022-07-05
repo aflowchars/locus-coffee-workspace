@@ -11,33 +11,41 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
+  id Int @id @default(autoincrement())
 
   fullName  String
   email     String   @unique
   hash      String
+  gender    Gender   @default(male)
   birthDate DateTime
-  gender    String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
 }
 
 model Product {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
+  id Int @id @default(autoincrement())
 
   name        String
   type        String
   price       Int
   description String
   point       Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
 }
 
 model Coin {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
+  id Int @id @default(autoincrement())
 
   totalPoint Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+enum Gender {
+  male
+  female
 }

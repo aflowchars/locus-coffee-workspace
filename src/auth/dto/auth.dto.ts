@@ -1,11 +1,13 @@
+import { Gender, Role } from '@prisma/client';
 import {
   IsDateString,
   IsEmail,
   IsEnum,
+  IsInt,
   IsNotEmpty,
+  IsOptional,
   IsString,
 } from 'class-validator';
-import { Gender } from '@prisma/client';
 
 export class AuthDto {
   @IsString()
@@ -26,4 +28,11 @@ export class AuthDto {
 
   @IsEnum(Gender)
   gender: Gender;
+
+  @IsEnum(Role)
+  role: Role;
+
+  @IsInt()
+  @IsOptional()
+  totalPoint: number;
 }

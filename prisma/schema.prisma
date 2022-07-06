@@ -13,14 +13,21 @@ datasource db {
 model User {
   id Int @id @default(autoincrement())
 
-  fullName  String
-  email     String   @unique
-  hash      String
-  gender    Gender   @default(male)
-  birthDate DateTime
+  fullName   String
+  email      String   @unique
+  hash       String
+  gender     Gender   @default(male)
+  role       Role     @default(customer)
+  birthDate  DateTime
+  totalPoint Int      @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
+
+  products Product[]
+  payments Payment[]
+
+  @@map("users")
 }
 
 model Product {
@@ -32,20 +39,59 @@ model Product {
   description String
   point       Int
 
+  userId    Int
+  paymentId Int
+
+  user    User    @relation(fields: [userId], references: [id])
+  payment Payment @relation(fields: [paymentId], references: [id])
+
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
+
+  @@map("products")
 }
 
-model Coin {
+model Payment {
   id Int @id @default(autoincrement())
 
-  totalPoint Int
+  // Heading
+  logo    String
+  hotline String
+  socmed  String
+
+  // Cashier
+  bill_no String
+  cashier String
+  hour    DateTime @default(now())
+
+  // Products
+  product_name String
+  qty          Int
+  price        Int
+
+  // Total
+  total_qty   Int
+  total_price Int
+  total_card  Int
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  products Product[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
+
+  @@map("payments")
 }
 
 enum Gender {
   male
   female
+}
+
+enum Role {
+  admin
+  cashier
+  customer
 }

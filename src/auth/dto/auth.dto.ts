@@ -11,7 +11,7 @@ import {
 
 export class AuthDto {
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   fullName: string;
 
   @IsEmail()
@@ -23,13 +23,15 @@ export class AuthDto {
   password: string;
 
   @IsDateString()
-  @IsNotEmpty()
+  @IsOptional()
   birthDate: Date;
 
   @IsEnum(Gender)
+  @IsOptional()
   gender: Gender;
 
   @IsEnum(Role)
+  @IsOptional()
   role: Role;
 
   @IsInt()

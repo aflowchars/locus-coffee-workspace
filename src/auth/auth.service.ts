@@ -64,7 +64,7 @@ export class AuthService {
 
     // Remove hash field in response
     delete user.hash;
-
+    delete user.role;
     // Send back the data to user
     return user;
   }

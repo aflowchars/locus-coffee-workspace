@@ -1,18 +1,33 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
+
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { PrismaService } from 'src/prisma/prisma.service';
+
 import * as argon from 'argon2';
 
 import { AuthDto } from './dto';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 
 @Injectable()
 export class AuthService {
-  constructor(private prisma: PrismaService) {}
+  /**
+   * CONSTRUCTOR
+   */
+  constructor(
+    private prisma: PrismaService,
+    private jwt: JwtService,
+    private config: ConfigService,
+  ) {}
+
+  /**
+   * REGISTER
+   */
   async register(dto: AuthDto) {
     try {
       // generate the password hash
       const hash = await argon.hash(dto.password);
-      console.log(dto.role);
+
       //save the new user
       const user = await this.prisma.user.create({
         data: {
@@ -26,11 +41,8 @@ export class AuthService {
         },
       });
 
-      delete user.hash;
-      delete user.role;
-
       // return the save user
-      return user;
+      return this.signToken(user.id, user.email);
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
@@ -42,6 +54,9 @@ export class AuthService {
     }
   }
 
+  /**
+   * LOGIN
+   */
   async login(dto: AuthDto) {
     // Find the user by email
     // if don't exist throw the error
@@ -62,10 +77,30 @@ export class AuthService {
       throw new ForbiddenException('Password incorrect');
     }
 
-    // Remove hash field in response
-    delete user.hash;
-    delete user.role;
-    // Send back the data to user
-    return user;
+    // Send back the data to create new token
+    return this.signToken(user.id, user.email);
+  }
+
+  /**
+   * TOKEN
+   */
+  async signToken(
+    userId: number,
+    email: string,
+  ): Promise<{ access_token: string }> {
+    const jwtSecret = this.config.get('JWT_SECRET');
+    const payload = {
+      sub: userId,
+      email,
+    };
+
+    const token = await this.jwt.signAsync(payload, {
+      expiresIn: '15m',
+      secret: jwtSecret,
+    });
+
+    return {
+      access_token: token,
+    };
   }
 }

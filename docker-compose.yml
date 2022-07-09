@@ -1,9 +1,31 @@
+##################
+###   DEV DB  ###
+#################
+# version: '2.6.1'
+# services:
+#   dev-db:
+#     image: postgres:13
+#     ports: 
+#       - 5434:5432
+#     environment:
+#       - POSTGRES_USER=postgres
+#       - POSTGRES_PASSWORD=0
+#       - POSTGRES_DB=locus_coffee
+#     networks:
+#       - aflowchars
+# networks:
+#   aflowchars:
+
+######################
+###   TESTING DB  ###
+####################
+
 version: '2.6.1'
 services:
-  dev-db:
+  test-db:
     image: postgres:13
     ports: 
-      - 5434:5432
+      - 5435:5432
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=0

@@ -6,6 +6,7 @@ import * as pactum from 'pactum';
 import { AppModule } from '../src/app.module';
 import { AuthDto } from '../src/auth/dto';
 import { PrismaService } from '../src/prisma/prisma.service';
+import { CreateProductDto } from '../src/product/dto';
 import { EditUserDto } from '../src/user/dto';
 
 describe('App e2e', () => {
@@ -174,6 +175,19 @@ describe('App e2e', () => {
   });
 
   describe('Product', () => {
+    describe('Get Empty Product', () => {
+      it('It should get an empty product', () => {
+        return pactum
+          .spec()
+          .get('/products')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .expectStatus(200)
+          .expectBody([]);
+      });
+    });
+
     describe('Get Product', () => {
       it.todo('It should get a product info by id');
     });
@@ -183,7 +197,25 @@ describe('App e2e', () => {
     });
 
     describe('Create Product', () => {
-      it.todo('It should create product info');
+      const createProductDto: CreateProductDto = {
+        name: 'Kopi Kapal Api',
+        type: 'drink',
+        price: 15000,
+        description: 'Kopi terenak dengan harga yang penak',
+        point: 50,
+      };
+
+      it('It should create product info', () => {
+        return pactum
+          .spec()
+          .post('/products')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .withBody(createProductDto)
+          .expectStatus(201)
+          .inspect();
+      });
     });
 
     describe('Edit Product', () => {

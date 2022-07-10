@@ -11,7 +11,7 @@ export class EditProductDto {
 
   @IsInt()
   @IsOptional()
-  price: string;
+  price: number;
 
   @IsString()
   @IsOptional()

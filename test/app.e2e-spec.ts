@@ -6,7 +6,7 @@ import * as pactum from 'pactum';
 import { AppModule } from '../src/app.module';
 import { AuthDto } from '../src/auth/dto';
 import { PrismaService } from '../src/prisma/prisma.service';
-import { CreateProductDto } from '../src/product/dto';
+import { CreateProductDto, EditProductDto } from '../src/product/dto';
 import { EditUserDto } from '../src/user/dto';
 
 describe('App e2e', () => {
@@ -188,14 +188,6 @@ describe('App e2e', () => {
       });
     });
 
-    describe('Get Product', () => {
-      it.todo('It should get a product info by id');
-    });
-
-    describe('Get All Products', () => {
-      it.todo('It should get all product info');
-    });
-
     describe('Create Product', () => {
       const createProductDto: CreateProductDto = {
         name: 'Kopi Kapal Api',
@@ -214,16 +206,81 @@ describe('App e2e', () => {
           })
           .withBody(createProductDto)
           .expectStatus(201)
-          .inspect();
+          .stores('productId', 'id');
+      });
+    });
+
+    describe('Get All Products', () => {
+      it('It should get all product info', () => {
+        return pactum
+          .spec()
+          .get('/products')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .expectStatus(200)
+          .expectJsonLength(1);
+      });
+    });
+
+    describe('Get Product By Id', () => {
+      it('It should get a product info by id', () => {
+        return pactum
+          .spec()
+          .get('/products/{id}')
+          .withPathParams('id', '$S{productId}')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .expectStatus(200)
+          .expectBodyContains('$S{productId}');
       });
     });
 
     describe('Edit Product', () => {
-      it.todo('It should edit product info');
+      const dto: EditProductDto = {
+        name: 'Sajang v-60',
+        type: 'drink',
+        description: 'Kopi pilihan dari lombok timur',
+        price: 15000,
+        point: 100,
+      };
+
+      it('It should edit product info', () => {
+        return pactum
+          .spec()
+          .patch('/products/{id}')
+          .withPathParams('id', '$S{productId}')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .withBody(dto)
+          .expectStatus(200);
+      });
     });
 
     describe('Delete Product', () => {
-      it.todo('It should get product info');
+      it('It should delete product info', () => {
+        return pactum
+          .spec()
+          .delete('/products/{id}')
+          .withPathParams('id', '$S{productId}')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .expectStatus(204);
+      });
+
+      it('It should get empty product', () => {
+        return pactum
+          .spec()
+          .get('/products')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .expectStatus(200)
+          .expectJsonLength(0);
+      });
     });
   });
 

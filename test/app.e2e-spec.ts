@@ -6,6 +6,7 @@ import * as pactum from 'pactum';
 import { AppModule } from '../src/app.module';
 import { AuthDto } from '../src/auth/dto';
 import { PrismaService } from '../src/prisma/prisma.service';
+import { EditUserDto } from '../src/user/dto';
 
 describe('App e2e', () => {
   // Create nest app
@@ -22,6 +23,7 @@ describe('App e2e', () => {
     app = app.useGlobalPipes(
       new ValidationPipe({
         whitelist: true,
+        transform: true,
       }),
     );
     app = app.setGlobalPrefix('api/v1');
@@ -139,8 +141,6 @@ describe('App e2e', () => {
 
   describe('User', () => {
     describe('Get Me', () => {
-      it.todo('It should get an user info');
-
       it('It should get an user info', () => {
         return pactum
           .spec()
@@ -153,7 +153,23 @@ describe('App e2e', () => {
     });
 
     describe('Edit User', () => {
-      it.todo('It should edit an user info');
+      const dto: EditUserDto = {
+        fullName: 'Khan Al-Won',
+        email: 'khanalwon@gmail.com',
+        password: 'khanalwon',
+        birthDate: new Date(),
+      };
+
+      it('It should edit an user info', () => {
+        return pactum
+          .spec()
+          .patch('/users')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .withBody(dto)
+          .expectStatus(200);
+      });
     });
   });
 
